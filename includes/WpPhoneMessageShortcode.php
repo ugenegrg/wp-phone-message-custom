@@ -152,34 +152,6 @@ if ( ! class_exists( 'WpPhoneMessageShortcode' ) ) {
 			$pick_up_times_late_start = $pick_up_times[ $day . '_tarde_inici' ];
 			$pick_up_times_late_end   = $pick_up_times[ $day . '_tarde_final' ];
 
-			// check if it is all day hrs or
-			// the hrs is divided as early / late
-//			if( "" == $pick_up_times_early_end && "" == $pick_up_times_late_start ) { // meaning - it is a full day hrs schedule
-//
-//				// should be array of hrs
-//				$full_hrs = $this->define_hrs( $post_id, $pick_up_times_early_start, $pick_up_times_late_end );
-//				$full_options = $this->make_option_out_of_available_hrs( 'Horas', $full_hrs );
-//				$return = array(
-//					'success' => true,
-//					'options' => $full_options
-//				);
-//
-//			} else { // meaning - it the hrs are divided into morning and evening
-//
-//				// should be array of hrs
-//				$early_hrs = $this->define_hrs( $post_id, $pick_up_times_early_start, $pick_up_times_early_end );
-//				$late_hrs  = $this->define_hrs( $post_id, $pick_up_times_late_start, $pick_up_times_late_end );
-//
-//				// $all_available_hrs_for_day = array_merge( $early_hrs, $late_hrs );
-//				$early_options = $this->make_option_out_of_available_hrs( 'Matí', $early_hrs );
-//				$late_options  = $this->make_option_out_of_available_hrs( 'Tarde', $late_hrs );
-//
-//				$return = array(
-//					'success' => true,
-//					'options' => $early_options . $late_options
-//				);
-//			}
-
 			// should be array of hrs
 			$early_hrs = $this->define_hrs( $post_id, $pick_up_times_early_start, $pick_up_times_early_end );
 			$late_hrs  = $this->define_hrs( $post_id, $pick_up_times_late_start, $pick_up_times_late_end );
