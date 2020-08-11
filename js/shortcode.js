@@ -2,6 +2,16 @@ jQuery(document).ready(function ($) {
 
     $("#whatapp-form").submit(function (e) {
         e.preventDefault();
+
+        // do some validation of day and time picker
+        var selectedDay = $('#timepicker__day').val();
+        var selectedHr = $('#timepicker__time').val();
+
+        if ("" == selectedDay || "" == selectedHr) {
+            alert('Please select both Dia and Hora .');
+            return false;
+        }
+
         var fullTelephone = $('#wp-phone-message-full-phone-number').val();
         var message = $('#wp-phone-message-message').val();
         var name = $('#wp-phone-message-name').val();
@@ -66,7 +76,7 @@ jQuery(document).ready(function ($) {
     function whatappCreateFinalMessage(name, address, phone, email, day, time, message) {
 
         final_message = '';
-            final_message += 'NOVA COMANDA (FINSARA) %0a';
+        final_message += 'NOVA COMANDA (FINSARA) %0a';
         if (name !== undefined)
             final_message += 'Nom de l\'establiment: ' + name + ' %0a';
         if (address !== undefined)
@@ -77,7 +87,7 @@ jQuery(document).ready(function ($) {
             final_message += 'Email: ' + email + ' %0a';
         if (day !== undefined)
             final_message += 'Hora de recollida: ' + day + ' - ' + time + ' %0a';
-            final_message += 'Productes: %0a';
+        final_message += 'Productes: %0a';
         final_message += message.replace(/[\r\n]/g, " %0a");
 
         return final_message;
