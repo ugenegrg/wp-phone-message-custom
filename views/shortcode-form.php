@@ -89,7 +89,7 @@ if ( ! empty( $days ) ) { // do only if there are days (today or tomorrow) check
                 var selected = $('#timepicker__day').val();
                 var post = $('.timepicker').attr('data-post');
                 if ("" == selected) {
-                    alert('Please select day.');
+                    alert('Selecciona el dia per veure les hores disponibles.');
                     return false;
                 }
 

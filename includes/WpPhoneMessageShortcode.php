@@ -13,8 +13,8 @@ if ( ! class_exists( 'WpPhoneMessageShortcode' ) ) {
 			add_action( 'wp_ajax_get_hrs', array( $this, 'get_day_hrs' ) );
 			add_action( 'wp_ajax_nopriv_get_hrs', array( $this, 'get_day_hrs' ) );
 
-//			date_default_timezone_set('Asia/Kathmandu');
-			date_default_timezone_set('Europe/Madrid');
+//			date_default_timezone_set( 'Asia/Kathmandu' );
+			date_default_timezone_set( 'Europe/Madrid' );
 
 		}
 
@@ -49,7 +49,7 @@ if ( ! class_exists( 'WpPhoneMessageShortcode' ) ) {
 				'Wednesday' => 'Dimecres',
 				'Thursday'  => 'Dijous',
 				'Friday'    => 'Divendres',
-				'Saturday'  => 'Disabte',
+				'Saturday'  => 'Dissabte',
 				'Sunday'    => 'Diumenge',
 
 			);
@@ -59,19 +59,19 @@ if ( ! class_exists( 'WpPhoneMessageShortcode' ) ) {
 
 		public function define_hrs( $post_id, $start_time, $end_time ) {
 
+			$time_array = array();
+
 			if ( "today" == $this->today_or_tomorrow ) {
 				$start_time = date( 'Y-m-d' ) . ' ' . $start_time;
 				$end_time   = date( 'Y-m-d' ) . ' ' . $end_time;
 
-			}
-			else { // if tomorrow
+			} else { // if tomorrow
 
 				// date( 'l', strtotime( '+1 day' ) );
-				$start_time = date( 'Y-m-d', strtotime('+1 day') ) . ' ' . $start_time;
-				$end_time   = date( 'Y-m-d', strtotime('+1 day') ) . ' ' . $end_time;
+				$start_time = date( 'Y-m-d', strtotime( '+1 day' ) ) . ' ' . $start_time;
+				$end_time   = date( 'Y-m-d', strtotime( '+1 day' ) ) . ' ' . $end_time;
 			}
 
-			$time_array = array();
 
 			// current time.
 			$current_time = strtotime( date( 'Y-m-d H:i' ) );
@@ -107,12 +107,11 @@ if ( ! class_exists( 'WpPhoneMessageShortcode' ) ) {
 			// make sure the $str_inc_time < $str_end_time
 			// and also $str_inc_time > $ready_time
 			while ( ( $str_inc_time <= $str_end_time ) ) {
-				if( $str_inc_time > $ready_time ) {
+				if ( $str_inc_time > $ready_time ) {
 					$time_array[] = date( 'H:i', $str_inc_time );
 				}
 				$str_inc_time = strtotime( $interval, $str_inc_time );
 			}
-
 			return $time_array;
 		}
 
@@ -152,18 +151,51 @@ if ( ! class_exists( 'WpPhoneMessageShortcode' ) ) {
 			$pick_up_times_late_start = $pick_up_times[ $day . '_tarde_inici' ];
 			$pick_up_times_late_end   = $pick_up_times[ $day . '_tarde_final' ];
 
-			// should be array of hrs
-			$early_hrs = $this->define_hrs( $post_id, $pick_up_times_early_start, $pick_up_times_early_end );
-			$late_hrs  = $this->define_hrs( $post_id, $pick_up_times_late_start, $pick_up_times_late_end );
+			if ( ( "" == $pick_up_times_early_start ) && ( "" == $pick_up_times_late_start ) ) { // if empty both start hours
 
-			// $all_available_hrs_for_day = array_merge( $early_hrs, $late_hrs );
-			$early_options = $this->make_option_out_of_available_hrs( 'Matí', $early_hrs );
-			$late_options  = $this->make_option_out_of_available_hrs( 'Tarde', $late_hrs );
+				$early_options = $this->make_option_out_of_available_hrs( 'Matí', '' );
+				$late_options  = $this->make_option_out_of_available_hrs( 'Tarde', '' );
+				$return        = array(
+					'success' => true,
+					'options' => $early_options . $late_options
+				);
 
-			$return = array(
-				'success' => true,
-				'options' => $early_options . $late_options
-			);
+			} else if ( ( "" == $pick_up_times_early_end ) && ( "" == $pick_up_times_late_start ) ) { // meaning - it is a full day hrs schedule
+
+				// should be array of hrs
+				$full_hrs = $this->define_hrs( $post_id, $pick_up_times_early_start, $pick_up_times_late_end );
+
+				$full_options = $this->make_option_out_of_available_hrs( 'Horas', $full_hrs );
+				$return       = array(
+					'success' => true,
+					'options' => $full_options
+				);
+
+			} else { // meaning - the hrs are divided into morning and evening
+
+				if( "" != $pick_up_times_early_start ) {
+					// should be array of hrs
+					$early_hrs = $this->define_hrs( $post_id, $pick_up_times_early_start, $pick_up_times_early_end );
+				} else {
+					$early_hrs = '';
+				}
+
+				if( "" != $pick_up_times_late_start ) {
+					// should be array of hrs
+					$late_hrs  = $this->define_hrs( $post_id, $pick_up_times_late_start, $pick_up_times_late_end );
+				} else {
+					$late_hrs = '';
+				}
+
+				// $all_available_hrs_for_day = array_merge( $early_hrs, $late_hrs );
+				$early_options = $this->make_option_out_of_available_hrs( 'Matí', $early_hrs );
+				$late_options  = $this->make_option_out_of_available_hrs( 'Tarde', $late_hrs );
+
+				$return = array(
+					'success' => true,
+					'options' => $early_options . $late_options
+				);
+			}
 
 			echo json_encode( $return );
 			wp_die();
